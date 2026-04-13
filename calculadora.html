@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    font-family: 'Segoe UI', sans-serif;
+}
+.calc {
+    background: rgba(255,255,255,0.07);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 28px;
+    padding: 24px;
+    width: 360px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+}
+.display {
+    background: rgba(0,0,0,0.35);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 18px;
+    padding: 18px 20px;
+    margin-bottom: 18px;
+    text-align: right;
+}
+#operacao {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.85rem;
+    min-height: 20px;
+}
+#display {
+    color: white;
+    font-size: 2.6rem;
+    font-weight: 300;
+    letter-spacing: -1px;
+}
+.botoes {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+button {
+    height: 72px;
+    font-size: 1.2rem;
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.08);
+    color: white;
+    cursor: pointer;
+    font-family: 'Segoe UI', sans-serif;
+    transition: all 0.12s ease;
+}
+button:hover {
+    background: rgba(255,255,255,0.18);
+    transform: translateY(-1px);
+}
+button:active { transform: scale(0.94); }
+.btn-top {
+    background: rgba(255,255,255,0.15);
+}
+.btn-op {
+    background: rgba(100,160,255,0.25);
+    color: #7eb8ff;
+    font-size: 1.4rem;
+}
+.btn-op:hover { background: rgba(100,160,255,0.4); }
+.btn-eq {
+    background: rgba(100,160,255,0.7);
+    color: white;
+}
+.btn-eq:hover { background: rgba(100,160,255,0.9); }
+.btn-zero { grid-column: span 2; }
+</style>
+</head>
+<body>
+<div class="calc">
+    <div class="display">
+        <div id="operacao"></div>
+        <div id="display">0</div>
+    </div>
+    <div class="botoes">
+        <button class="btn-top" onclick="limpar()">C</button>
+        <button class="btn-top" onclick="sinalTrocar()">±</button>
+        <button class="btn-top" onclick="porcentagem()">%</button>
+        <button class="btn-op" onclick="setOp('÷')">÷</button>
+
+        <button onclick="num(7)">7</button>
+        <button onclick="num(8)">8</button>
+        <button onclick="num(9)">9</button>
+        <button class="btn-op" onclick="setOp('×')">×</button>
+
+        <button onclick="num(4)">4</button>
+        <button onclick="num(5)">5</button>
+        <button onclick="num(6)">6</button>
+        <button class="btn-op" onclick="setOp('-')">−</button>
+
+        <button onclick="num(1)">1</button>
+        <button onclick="num(2)">2</button>
+        <button onclick="num(3)">3</button>
+        <button class="btn-op" onclick="setOp('+')">+</button>
+
+        <button class="btn-zero" onclick="num(0)">0</button>
+        <button onclick="virgula()">,</button>
+        <button class="btn-eq" onclick="igual()">=</button>
+    </div>
+</div>
+
+<script>
+let expressao = '';
+let novoCalculo = false;
+
+function atualizar(valor) {
+    document.getElementById('display').innerText = valor || '0';
+}
+
+function num(n) {
+    if (novoCalculo) {
+        expressao = '';
+        novoCalculo = false;
+    }
+    expressao += String(n);
+    atualizar(expressao);
+}
+
+function setOp(op) {
+    if (expressao === '') return;
+    novoCalculo = false;
+    expressao += op;
+    atualizar(expressao);
+}
+
+function igual() {
+    if (expressao === '') return;
+    try {
+        let calc = expressao
+            .replace(/×/g, '*')
+            .replace(/÷/g, '/');
+        let resultado = Function('"use strict"; return (' + calc + ')')();
+        resultado = parseFloat(resultado.toFixed(10));
+        atualizar(resultado);
+        document.getElementById('operacao').innerText = expressao + ' =';
+        expressao = String(resultado);
+        novoCalculo = true;
+    } catch {
+        atualizar('Erro');
+        expressao = '';
+    }
+}
+
+function limpar() {
+    expressao = '';
+    novoCalculo = false;
+    atualizar('0');
+    document.getElementById('operacao').innerText = '';
+}
+
+function sinalTrocar() {
+    if (expressao === '' || expressao === '0') return;
+    if (expressao.startsWith('-')) {
+        expressao = expressao.slice(1);
+    } else {
+        expressao = '-' + expressao;
+    }
+    atualizar(expressao);
+}
+
+function porcentagem() {
+    if (expressao === '') return;
+    try {
+        let valor = Function('"use strict"; return (' + expressao + ')')();
+        expressao = String(valor / 100);
+        atualizar(expressao);
+    } catch {
+        atualizar('Erro');
+        expressao = '';
+    }
+}
+
+function virgula() {
+    let partes = expressao.split(/[\+\-\×\÷]/);
+    let ultimaParte = partes[partes.length - 1];
+    if (!ultimaParte.includes('.')) {
+        expressao += '.';
+        atualizar(expressao);
+    }
+}
+</script>
+</body>
+</html>
