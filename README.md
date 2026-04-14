@@ -1,5 +1,9 @@
 # 🧮 Calculadora v1
 
+## 🌐 Acesse online
+
+👉 [Abrir Calculadora](https://charllesrick.github.io/calculadora_v1/index.html)
+
 Calculadora com interface Glassmorphism desenvolvida em Python e JavaScript.
 
 ## ✨ Funcionalidades
