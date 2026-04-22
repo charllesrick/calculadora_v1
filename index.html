@@ -133,8 +133,16 @@ function num(n) {
 
 function setOp(op) {
     if (expressao === '') return;
+    
+    // Se o último caractere já é um operador, substitui ao invés de adicionar
+    const ultimoChar = expressao.slice(-1);
+    if (['+', '-', '×', '÷'].includes(ultimoChar)) {
+        expressao = expressao.slice(0, -1) + op;
+    } else {
+        expressao += op;
+    }
+    
     novoCalculo = false;
-    expressao += op;
     atualizar(expressao);
 }
 
