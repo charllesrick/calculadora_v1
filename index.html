@@ -42,6 +42,9 @@ body {
     font-size: 2.6rem;
     font-weight: 300;
     letter-spacing: -1px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .botoes {
     display: grid;
@@ -120,7 +123,15 @@ let expressao = '';
 let novoCalculo = false;
 
 function atualizar(valor) {
-    document.getElementById('display').innerText = valor || '0';
+    const el = document.getElementById('display');
+    el.innerText = valor || '0';
+    
+    // Reduz a fonte conforme o número cresce
+    const len = String(valor).length;
+    if (len > 12) el.style.fontSize = '1.4rem';
+    else if (len > 9) el.style.fontSize = '1.8rem';
+    else if (len > 6) el.style.fontSize = '2.2rem';
+    else el.style.fontSize = '2.6rem';
 }
 
 function num(n) {
@@ -128,6 +139,14 @@ function num(n) {
         expressao = '';
         novoCalculo = false;
     }
+    
+    // Pega só a parte do último número digitado
+    const partes = expressao.split(/[\+\-\×\÷]/);
+    const ultimoNumero = partes[partes.length - 1];
+    
+    // Limita a 10 dígitos por número
+    if (ultimoNumero.replace('.', '').length >= 10) return;
+    
     expressao += String(n);
     atualizar(expressao);
 }
